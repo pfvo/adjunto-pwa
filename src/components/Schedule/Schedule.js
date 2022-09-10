@@ -25,6 +25,7 @@ const Schedule = ({Temporal, selectedSchedule, vigilantes, dates, changeDay, cha
             changeDay={changeDay}
             changeDay2={changeDay2}
             horarios={horarios}
+            Temporal={Temporal}
 
             />)
     }
