@@ -1,0 +1,85 @@
+.scheduleList {
+    background-color: none;
+    width: 350px;
+    text-align: center;
+    box-shadow: 5px 5px 15px;
+    border-radius:10px;
+}
+
+.scheduleList > p {
+    margin: 0;
+    font-weight: bold;
+    width: 350px;
+ 
+}
+
+.add-schedule-insert{
+  height: 20px;
+  width: 20px;
+  font-weight: 700;
+  margin: 0px;
+  padding: 0px;
+  margin-left: 30px;
+  margin-right: 10px;
+  margin-bottom: 3.5px;
+  border-radius: 900px;
+  background-color: transparent;
+}
+
+.schedule-delete{
+  height: 20px;
+  width: 20px;
+  font-weight: 700;
+  margin: 0px;
+  padding: 0px;
+  margin-left: 10px;
+  margin-bottom: 2px;
+  border-radius: 900px;
+  background-color: transparent;
+}
+.scheduleList-sub {
+    
+    width: 350px;
+    height: 75px;
+    overflow-y: scroll;
+    
+}
+
+.scheduleListId {
+    width: 20px;
+}
+
+.single-schedule {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+
+/* width */
+
+.scheduleList-sub::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  /* Track */
+
+  .scheduleList-sub::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    background: #c2c2c2;
+    border-radius: 20px;
+  }
+  
+  /* Handle */
+
+  .scheduleList-sub::-webkit-scrollbar-thumb {
+    background: rgb(123, 123, 123);
+    border-radius: 20px;
+  }
+  
+  /* Handle on hover */
+
+  .scheduleList-sub::-webkit-scrollbar-thumb:hover {
+    background: rgb(82, 82, 82)
+  }

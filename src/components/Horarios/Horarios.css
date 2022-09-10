@@ -1,0 +1,22 @@
+.times {
+    height: 18px;
+}
+/* width */
+
+.horarioListId{
+    width: 20px;
+    
+}
+
+.add-horario-insert {
+    height: 20px;
+    width: 20px;
+    font-weight: 700;
+    margin: 0px;
+    padding: 0px;
+    margin-left: 37px;
+    margin-right: 10px;
+    margin-bottom: 3.5px;
+    border-radius: 900px;
+    background-color: transparent;
+}

@@ -1,0 +1,44 @@
+.schedule-box {
+    display: flex;
+    width: 95%;
+    margin: 10px;
+    align-content: center;
+}
+
+.schedule-props {
+    width: 10%;
+    margin:0;
+    padding: 0;
+    
+}
+
+.mes {
+    font-size: 2em;
+    width: 95%;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    margin-bottom: -1.5px;
+  }
+.vig-name-container {
+    margin: 0px;
+    padding: 0;
+}
+.row-vig {
+    width: 75%;
+    height: 20px;
+    padding: 0;
+    margin: 0px;
+    border: none;
+    text-align: center;
+    font-size: 0.7em;
+}
+.totalHoras {
+    width: 20%;
+    height: 20px;
+    padding: 0;
+    margin: 0px;
+    border: none;
+    text-align: center;
+    font-size: 0.7em;
+}
