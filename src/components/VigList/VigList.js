@@ -22,7 +22,7 @@ const VigList = ({vigilantes, addVigilanteSchedule, removeVigilanteSchedule, cha
                         mec: insertVigilanteMec,
                         nome:insertVigilanteName, 
                         rows: insertVigilanteRowsArray,
-                        horas: []
+                        horas: 0
                     })
                     document.querySelector('#insertVigilanteMec').value = '';
                     document.querySelector('#insertVigilanteName').value = '';

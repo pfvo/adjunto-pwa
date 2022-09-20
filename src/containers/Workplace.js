@@ -101,7 +101,7 @@ const initialState = {
                     mec: '2620',
                     nome: 'João Romão',
                     rows: [0],
-                    horas: []
+                    horas: 12
                 }
             ]
         }
@@ -124,7 +124,6 @@ const initialState = {
         end: "2022-07-31",
         vigilantes: []
     }
-
 }
 
 class Workplace extends Component {
@@ -245,12 +244,12 @@ class Workplace extends Component {
         this.setState({horarios: changeHorarios})
     }
     
-    setTotalHoras = (total, vig) => {
+    setTotalHoras = (vig, total) => {
         const changeTotalHoras = this.state.schedules.map(schedule => {
             if (schedule.id === this.state.selectedSchedule.id) {
                 const changedVig = schedule.vigilantes.map(vigilante => {
                     if (vigilante.mec === vig.mec) {
-                        return {...vigilante, totalHoras: total}
+                        return {...vigilante, horas: total}
                     } else {
                         return vigilante
                     }
@@ -260,8 +259,11 @@ class Workplace extends Component {
                 return schedule
             }
         })
-        this.setState({schedules: changeTotalHoras}, ()=> console.log(this.state.schedules))
+        this.setState({schedules: changeTotalHoras}, ()=>console.log(this.state.schedules))
+        console.log(this.state.schedules)
     }
+
+
 
     changeDay = (event, currentDay) => {
         const {dates} = this.state;
@@ -359,6 +361,8 @@ class Workplace extends Component {
                 changeDay={this.changeDay}
                 changeDay2={this.changeDay2}
                 horarios={this.state.horarios}
+                setTotalHoras={this.setTotalHoras}
+                horas={this.state.horas}
 
                 />
             </div>

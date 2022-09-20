@@ -4,7 +4,8 @@ import Day from "../Day/Day"
 
 
 
-const Schedule = ({Temporal, selectedSchedule, vigilantes, dates, changeDay, changeDay2, horarios}) => {
+
+const Schedule = ({Temporal, selectedSchedule, vigilantes, dates, changeDay, changeDay2, horarios, setTotalHoras, horas}) => {
     const fullMonthsPT = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Jullho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
     
     const totalDays  = selectedSchedule.id ? (Temporal.PlainDateTime.from(`${selectedSchedule.start} 00:00:00`)
@@ -12,8 +13,8 @@ const Schedule = ({Temporal, selectedSchedule, vigilantes, dates, changeDay, cha
     .round({ smallestUnit: "days" }).days) : 0
 
     let arr = [];
-
-
+    let totalHoras;
+    
     for(let i=0; i<totalDays; i++) {
         const currentDay = Temporal.PlainDate.from(selectedSchedule.start).add({ days: i})
         
@@ -74,31 +75,44 @@ const Schedule = ({Temporal, selectedSchedule, vigilantes, dates, changeDay, cha
             } else {
                 arr2.push(0)
             }
-            
             }
             console.log(Temporal.PlainTime.from(document.querySelector(`#bhorasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#bhorasIdEnd`).value)).total('hours'))
-            const totalHoras = arr2.flat().reduce((acc, curr)=> acc + curr,0)
+            totalHoras = arr2.flat().reduce((acc, curr)=> acc + curr,0)
+            
+     
 
             const mappedRows = vigilante.rows.map(row => {
                 return (
-                    <div key={`${row}-${vigilante.mec}`} className='vig-name-container' >
+                    <div key={`${row}-${vigilante.mec}`} horas={`${vigilante.mec}`} className='vig-name-container' style={{display: 'inline-flex', height: '20px'}} onClick={()=>setTotalHoras(vigilante, totalHoras)}>
                         <input className='row-vig' defaultValue={vigilante.nome}></input>
                         {/* <input className='totalHoras' defaultValue={[...document.querySelectorAll(`[mec="${vigilante.mec}"]`)]
                         .reduce((acc, curr) => curr.value.length < 1 ? acc + 0 : acc + Number(document.querySelector(`#${curr.value}horasId`).value),0)}></input>
                              */}
+                        <div style={{margin: '0', marginLeft: '5px'}}>{totalHoras}</div>
 
-                        {totalHoras}
+                        
 
                     </div>  
                 )
             })
             return mappedRows;
         })}
+        
 
         </div>
         {arr}
+        <button id="insertHoras" onClick={()=>{
+            document.getElementById('insertHoras').style.boxShadow="2px 2px 15px 1px gray";
+            vigilantes.forEach(vigilante => {
+            if(document.querySelectorAll(`[horas="${vigilante.mec}"]`).length){
+            document.querySelectorAll(`[horas="${vigilante.mec}"]`)[0].click()
+            }
+            })
+        }}>inserir Horas</button>
+        
         </div>
     )
+    
 }
 
 export default Schedule;

@@ -13,6 +13,7 @@ const Day = ({currentDay, vigilantes, dates, changeDay, changeDay2, horarios, Te
             return <input 
            
             onChange={(event)=> {
+                document.getElementById('insertHoras').style.boxShadow="0px 0px 25px 4px rgb(0, 255, 175)";
                 horarios.filter(horario => horario.id === event.target.value).length ?
                 changeDay(event, currentDay) : 
                 event.target.value === "" ?
