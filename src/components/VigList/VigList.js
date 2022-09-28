@@ -14,6 +14,7 @@ const VigList = ({vigilantes, addVigilanteSchedule, removeVigilanteSchedule, cha
                     const insertVigilanteMec = document.querySelector('#insertVigilanteMec').value;
                     const insertVigilanteName = document.querySelector('#insertVigilanteName').value;
                     const insertVigilanteRows = document.querySelector('#insertVigilanteRows').value;
+                    document.getElementById('insertHoras').style.boxShadow="0px 0px 25px 4px rgb(0, 255, 175)"
                     const insertVigilanteRowsArray = [];
                     for (let i=0; i<Number(insertVigilanteRows); i++) {
                         insertVigilanteRowsArray.push(i)
@@ -43,10 +44,15 @@ const VigList = ({vigilantes, addVigilanteSchedule, removeVigilanteSchedule, cha
                                 type='text' 
                                 className='changeRows' 
                                 defaultValue={vigilante.rows.length} 
-                                onChange={(event)=>changeVigRows(vigilante, event)}>
+                                onChange={(event)=> {
+                                    changeVigRows(vigilante, event)
+                                }}>
                             </input>
                             <button
-                                onClick={()=>removeVigilanteSchedule(vigilante)}
+                                onClick={()=>{
+                                    document.getElementById('insertHoras').style.boxShadow="0px 0px 25px 4px rgb(0, 255, 175)"
+                                    removeVigilanteSchedule(vigilante)
+                                    }}
                                 className='schedule-delete'>-</button>
                         </div>
                     )

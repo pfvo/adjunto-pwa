@@ -1,8 +1,8 @@
 import './ScheduleList.css';
 
 const ScheduleList = ({schedules, selectSchedule, addSchedule, changeSchedule, removeSchedule, vigilantes}) => {
- return (
-    <div className="scheduleList">
+    return (
+        <div className="scheduleList">
         <p>ScheduleList</p>
         <div>
             <input id='insertScheduleID' type='text' placeholder='ID' className='scheduleListId'></input>
@@ -25,6 +25,7 @@ const ScheduleList = ({schedules, selectSchedule, addSchedule, changeSchedule, r
                 document.querySelector("#insertScheduleID").value = ''
                 document.querySelector("#insertScheduleStart").value = ''
                 document.querySelector("#insertScheduleEnd").value = ''
+                document.getElementById('insertHoras').style.boxShadow="0px 0px 25px 4px rgb(0, 255, 175)";
             }} 
             className='add-schedule-insert'>
             +
@@ -39,25 +40,36 @@ const ScheduleList = ({schedules, selectSchedule, addSchedule, changeSchedule, r
                         <input  
                             type='date' 
                             defaultValue = {schedule.start}
-                            onChange={(event)=>changeSchedule(schedule.id, "start", event)} >
+                            onChange={(event)=>{
+                                changeSchedule(schedule.id, "start", event)
+                                document.getElementById('insertHoras').style.boxShadow="0px 0px 25px 4px rgb(0, 255, 175)"
+                                }}>
                         </input>
   
                         <input                             
                             type='date' 
                             defaultValue = {schedule.end}
-                            onChange={(event)=>changeSchedule(schedule.id, "end", event)} >
+                            onChange={(event)=>{
+                                changeSchedule(schedule.id, "end", event)
+                                document.getElementById('insertHoras').style.boxShadow="0px 0px 25px 4px rgb(0, 255, 175)"
+                                }} >
                         </input>
                         <label className="select-schedule">
                             <input
                             type="radio"
                             name="select-schedule" 
                             className="select-schedule-radio"
-                            onClick={() => selectSchedule(schedule.id)}>
+                            onClick={() => {
+                                selectSchedule(schedule.id)
+                                }}>
                             </input>
                         </label>
                         <button 
                             className='schedule-delete'
-                            onClick={()=>removeSchedule(schedule.id)}>
+                            onClick={()=> {
+                                removeSchedule(schedule.id)
+                                document.getElementById('insertHoras').style.boxShadow="0px 0px 25px 4px rgb(0, 255, 175)"
+                                }}>
                             -
                         </button>
                     </div>

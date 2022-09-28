@@ -4,9 +4,13 @@ const getDateWorker = (currentDay, rowId, dates) => {
     return dates[currentDay.year]?.[currentDay.month]?.[currentDay.day]?.[rowId] 
 }
 
-const Day = ({currentDay, vigilantes, dates, changeDay, changeDay2, horarios, Temporal}) => {
+
+const Day = ({currentDay, vigilantes, dates, changeDay, changeDay2, horarios, Temporal, options, feriados}) => {
+    
+    const horasFeriado= [];
     const horasDiarias = []
     const weekDaysPT = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'];
+    const weekDaysPTFull = ['segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
     const day = currentDay.day < 10 ? '0' + currentDay.day.toString() : currentDay.day;
     const mappedVigilantes = vigilantes.map(vigilante => {
         const mappedRows = vigilante.rows.map(row => {
@@ -26,6 +30,7 @@ const Day = ({currentDay, vigilantes, dates, changeDay, changeDay2, horarios, Te
             key={`${row+1}-${vigilante.mec}`}
             placeholder={`${row+1}-${vigilante.mec}`} 
             defaultValue={getDateWorker(currentDay, `${row+1}-${vigilante.mec}`, dates)}
+            date={currentDay.toString()}
             className='letter-input'>
             </input>
         })
@@ -34,9 +39,11 @@ const Day = ({currentDay, vigilantes, dates, changeDay, changeDay2, horarios, Te
     return (
     <div className="single-day">
     {
+        feriados.includes(currentDay.toString()) ?
+        <p className='single-day-heading' style={{backgroundColor: 'yellow'}}>{`${day} (${weekDaysPT[currentDay.dayOfWeek -1]})`}</p> :
         currentDay.dayOfWeek === 6 || currentDay.dayOfWeek === 7 ?
         <p className='single-day-heading' style={{backgroundColor: 'lightgrey'}}>{`${day} (${weekDaysPT[currentDay.dayOfWeek -1]})`}</p> :
-        <p className='single-day-heading'>{`${day} (${weekDaysPT[currentDay.dayOfWeek -1]})`}</p> 
+        <p className='single-day-heading' style={{backgroundColor: 'transparent'}}>{`${day} (${weekDaysPT[currentDay.dayOfWeek -1]})`}</p> 
 
     }
         {mappedVigilantes}
@@ -78,19 +85,83 @@ const Day = ({currentDay, vigilantes, dates, changeDay, changeDay2, horarios, Te
                 const filtered = Object.entries(dates[currentDay2.year]?.[currentDay2.month]?.[currentDay2.day]).filter(item=> item[0].includes(vigilante.mec))
                     filtered.map(item => arr2.push(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`).value)).round({ smallestUnit: "hours" }).total('hours')))
 
-            } else {
+            }
+             else {
                 arr2.push(0)
             }
             const totalHoras = arr2.flat().reduce((acc, curr)=> acc + curr,0)
             horasDiarias.push(totalHoras)
-         
-            
 })}
+
         
-    <div>{horasDiarias.reduce((acc, curr)=> acc + curr,0)}</div>
-    {/* //AQUI SERÁ FEITA A CONDICIONAL (SE totalHoras < (tdu?24 etc) retutn div style=color red) etc etc */}
+    {/* <div>{horasDiarias.reduce((acc, curr)=> acc + curr,0)}</div> */}
+    {
+     feriados.includes(currentDay.toString()) && options.feriado.inicio === '00:00' && 
+    options.feriado.fim === "23:59" ?  
+     
+    (horasDiarias.reduce((acc, curr)=> acc + curr,0) !== (Temporal.PlainTime
+        .from(options.feriado.inicio)
+        .until(Temporal.PlainTime.from(options.feriado.fim))
+        .round({smallestUnit: "hours"}).total('hours')))
+        ? <div style={{backgroundColor:'red'}}>
+        {
+            `${horasDiarias.reduce((acc, curr)=> acc + curr,0)}/${Temporal.PlainTime
+            .from(options.feriado.inicio)
+            .until(Temporal.PlainTime
+            .from(options.feriado.fim))
+            .round({smallestUnit: "hours"}).total('hours')}`
+        }
+        </div> 
+        : <div>{horasDiarias.reduce((acc, curr)=> acc + curr,0)}</div>  
+    : feriados.includes(currentDay.toString()) && (horasDiarias.reduce((acc, curr)=> acc + curr,0) !== (Temporal.PlainTime
+        .from(options.feriado.inicio)
+        .until(Temporal.PlainTime.from(options.feriado.fim))
+        .round({smallestUnit: "minutes"}).total('hours')))
+        ? <div style={{backgroundColor:'red'}}>
+        {
+            `${horasDiarias.reduce((acc, curr)=> acc + curr,0)}/${Temporal.PlainTime
+            .from(options.feriado.inicio)
+            .until(Temporal.PlainTime
+            .from(options.feriado.fim))
+            .round({smallestUnit: "minutes"}).total('hours')}`
+        }
+        </div>   
+     
+     :
+    options[weekDaysPTFull[currentDay.dayOfWeek -1]].inicio === '00:00' && 
+    options[weekDaysPTFull[currentDay.dayOfWeek -1]].fim === "23:59"
+    ? (horasDiarias.reduce((acc, curr)=> acc + curr,0) !== (Temporal.PlainTime
+        .from(options[weekDaysPTFull[currentDay.dayOfWeek -1]].inicio)
+        .until(Temporal.PlainTime.from(options[weekDaysPTFull[currentDay.dayOfWeek -1]].fim))
+        .round({smallestUnit: "hours"}).total('hours')))
+        ? <div style={{backgroundColor:'red'}}>
+        {
+            `${horasDiarias.reduce((acc, curr)=> acc + curr,0)}/${Temporal.PlainTime
+            .from(options[weekDaysPTFull[currentDay.dayOfWeek -1]].inicio)
+            .until(Temporal.PlainTime
+            .from(options[weekDaysPTFull[currentDay.dayOfWeek -1]].fim))
+            .round({smallestUnit: "hours"}).total('hours')}`
+        }
+        </div> 
+        : <div>{horasDiarias.reduce((acc, curr)=> acc + curr,0)}</div>  
+    : (horasDiarias.reduce((acc, curr)=> acc + curr,0) !== (Temporal.PlainTime
+        .from(options[weekDaysPTFull[currentDay.dayOfWeek -1]].inicio)
+        .until(Temporal.PlainTime.from(options[weekDaysPTFull[currentDay.dayOfWeek -1]].fim))
+        .round({smallestUnit: "minutes"}).total('hours')))
+        ? <div style={{backgroundColor:'red'}}>
+        {
+            `${horasDiarias.reduce((acc, curr)=> acc + curr,0)}/${Temporal.PlainTime
+            .from(options[weekDaysPTFull[currentDay.dayOfWeek -1]].inicio)
+            .until(Temporal.PlainTime
+            .from(options[weekDaysPTFull[currentDay.dayOfWeek -1]].fim))
+            .round({smallestUnit: "minutes"}).total('hours')}`
+        }
+        </div> 
+        : <div>{horasDiarias.reduce((acc, curr)=> acc + curr,0)}</div> 
+        }
+
+
     </div> 
     )
 }
-
 export default Day;

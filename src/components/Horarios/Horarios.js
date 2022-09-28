@@ -20,7 +20,8 @@ const Horarios = ({horarios, Temporal, addHorario, removeHorario, changeHorario}
                 onClick={()=> {
                     const id = document.querySelector("#insertHorarioID").value
                     const start = document.querySelector("#insertHorarioStart").value
-                    const end = document.querySelector("#insertHorarioEnd").value         
+                    const end = document.querySelector("#insertHorarioEnd").value
+                    document.getElementById('insertHoras').style.boxShadow="0px 0px 25px 4px rgb(0, 255, 175)"         
                     horarios.filter(horario => horario.id === id).length ?
                     alert('invalid ID') :
                     addHorario({id, start, end})
@@ -40,6 +41,7 @@ const Horarios = ({horarios, Temporal, addHorario, removeHorario, changeHorario}
                             className='single-schedule' 
                             key={horario.id} 
                             onChange={()=>{
+                                document.getElementById('insertHoras').style.boxShadow="0px 0px 25px 4px rgb(0, 255, 175)"
                                 return document.querySelector(`#${horario.id}horasId`).value = Temporal.PlainTime.from(document.querySelector(`#${horario.id}horasIdStart`).value).until(document.querySelector(`#${horario.id}horasIdEnd`).value).total('hours') > 0 ?
                                     Temporal.PlainTime.from(document.querySelector(`#${horario.id}horasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#${horario.id}horasIdEnd`).value)).total('hours').toString() :
                                     24 - Temporal.PlainTime.from(document.querySelector(`#${horario.id}horasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#${horario.id}horasIdEnd`).value)).abs().total('hours')}
@@ -78,7 +80,10 @@ const Horarios = ({horarios, Temporal, addHorario, removeHorario, changeHorario}
                                 }>
                             </input>
                             <button
-                                onClick={() => removeHorario(horario.id)} 
+                                onClick={() => {
+                                    document.getElementById('insertHoras').style.boxShadow="0px 0px 25px 4px rgb(0, 255, 175)"
+                                    removeHorario(horario.id)
+                                    }} 
                                 className='schedule-delete'
                                 >
                                 -

@@ -3,30 +3,71 @@ import Schedule from "../components/Schedule/Schedule";
 import { Component } from "react";
 import VigList from "../components/VigList/VigList";
 import Horarios from "../components/Horarios/Horarios";
+import Modal from "../components/Modal/Modal";
+import WorkplaceOptions from "../components/WorkplaceOptions/WorkplaceOptions";
 
 const initialState = {
     workplace: 'hotel',
-    type: 'TDA',
+    isModalOpen: false,
+    options: {
+        segunda: {
+            inicio: "00:00",
+            fim: "23:59"
+        },
+        terça: {
+            inicio: "00:00",
+            fim: "23:59"
+        },
+        quarta: {
+            inicio: "00:00",
+            fim: "23:59"
+        },
+        quinta: {
+            inicio: "00:00",
+            fim: "23:59"
+        },
+        sexta: {
+            inicio: "00:00",
+            fim: "23:59"
+        },
+        sabado: {
+            inicio: "00:00",
+            fim: "23:59"
+        },
+        domingo: {
+            inicio: "00:00",
+            fim: "23:59"
+        },
+        feriado: {
+            inicio: "00:00",
+            fim: "23:59"
+        }
+    },
+    feriados: ["2022-07-05", "2022-08-07", "2022-09-07", "2022-01-07", "2022-10-01", "2022-11-07", "2022-12-07", "2022-02-17", "2022-09-17", "2022-01-17", "2022-10-17", "2022-11-17", "2022-12-27", "2022-07-07", "2022-02-08", "2022-02-09"],
     vigilantes: [
         {
             mec: '2600',
-            nome: 'Luis Humberto Costa Ramos',
-            rows: [0]
+            nome: 'Luis Ramos',
+            rows: [0],
+            horas: 0
         },
         {
             mec: '2601',
-            nome: 'Pedro Filipe Viana Oliveira',
-            rows: [0]
+            nome: 'Pedro Oliveira',
+            rows: [0],
+            horas: 0
         },
         {
             mec: '2629',
-            nome: 'Rafael Miguel Santos',
-            rows: [0]
+            nome: 'Rafael Santos',
+            rows: [0],
+            horas: 0
         },
         {
             mec: '2620',
             nome: 'João Romão',
-            rows: [0]
+            rows: [0],
+            horas: 0
         }
     ],
     horarios:[
@@ -48,7 +89,7 @@ const initialState = {
         {
             id: "d",
             start: "12:00",
-            end: "08:00"
+            end: "04:00"
         }
     ],
     schedules: [
@@ -60,7 +101,7 @@ const initialState = {
                 {
                     mec: '2600',
                     nome: 'Luis Humberto Costa Ramos',
-                    rows: [0]
+                    rows: [0],
                 },
                 {
                     mec: '2622200',
@@ -112,8 +153,8 @@ const initialState = {
             7: {
                 1: {
                     '1-2620': 'a',
-                    '1-2601': 'B',
-                    '1-2629': 'C'
+                    '1-2601': 'b',
+                    '1-2629': 'c'
                 }
             }
         }
@@ -147,7 +188,6 @@ class Workplace extends Component {
                 return {dates: {...prevState.dates, [year]:{ ...prevState.dates[year], [month]:{}}}}
             })
         }
-        console.log(this.state)
         return;
     }
     
@@ -244,24 +284,207 @@ class Workplace extends Component {
         this.setState({horarios: changeHorarios})
     }
     
-    setTotalHoras = (vig, total) => {
+    setTotalHoras = () => {
         const changeTotalHoras = this.state.schedules.map(schedule => {
             if (schedule.id === this.state.selectedSchedule.id) {
                 const changedVig = schedule.vigilantes.map(vigilante => {
-                    if (vigilante.mec === vig.mec) {
-                        return {...vigilante, horas: total}
-                    } else {
-                        return vigilante
-                    }
-                })
+                        return {...vigilante, horas: Number(document.querySelectorAll(`[horas="${vigilante.mec}"]`)[0].textContent)}
+                    })                
                 return {...schedule, vigilantes: changedVig}
             } else {
                 return schedule
             }
         })
-        this.setState({schedules: changeTotalHoras}, ()=>console.log(this.state.schedules))
+        this.setState(prevState=>({...prevState, schedules: changeTotalHoras}), ()=>this.selectSchedule(this.state.selectedSchedule.id))
         console.log(this.state.schedules)
     }
+
+    setTotalHorasFeriadoERRADOOOOOO = (Temporal) => {
+        const { feriados } = this.state
+        const changeTotalHoras = this.state.schedules.map(schedule => {
+            if (schedule.id === this.state.selectedSchedule.id) {
+                const changedVig = schedule.vigilantes.map(vigilante => {        
+                    const hFeriado = feriados.map(feriado => {
+                        const today = Temporal.PlainDate.from(feriado)
+                        const yesterday = today.subtract({days: 1})
+                        const letraHoje = document.querySelector(`[mec="${vigilante.mec}"][date="${feriado}"]`)?.value
+                        const letraOntem = document.querySelector(`[mec="${vigilante.mec}"][date="${yesterday}"]`)?.value
+
+                        if(document.querySelector(`[mec="${vigilante.mec}"][date="${yesterday}"]`) && letraOntem &&
+                        Temporal.PlainTime.from(document.querySelector(`#${letraOntem}horasIdStart`).value)
+                        .until(Temporal.PlainTime.from(document.querySelector(`#${letraOntem}horasIdEnd`).value))
+                        .total('hours') <= 0) {
+                            return Temporal.PlainTime.from("00:00")
+                        .until(Temporal.PlainTime.from(document.querySelector(`#${letraOntem}horasIdEnd`).value))
+                        .total('hours')
+                        }
+
+                        
+                        if(document.querySelector(`[mec="${vigilante.mec}"][date="${today}"]`) && letraHoje &&
+                        Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdStart`).value)
+                        .until(Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdEnd`).value))
+                        .total('hours') <= 0) {
+                            return Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdStart`).value)
+                        .until(Temporal.PlainTime.from("23:59:59"))
+                        .round({smallestUnit: "minutes"})
+                        .total('hours')
+                        }
+                        
+                        if(document.querySelector(`[mec="${vigilante.mec}"][date="${feriado}"]`) && letraHoje &&
+                        Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdStart`).value)
+                        .until(Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdEnd`).value))
+                        .total('hours') > 0) {
+                            return Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdStart`).value)
+                        .until(Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdEnd`).value))
+                        .round({smallestUnit: "minutes"})
+                        .total('hours')
+                        }
+                        return 0
+                })
+            return {...vigilante, horasFeriado: hFeriado.reduce((acc, curr)=> acc + curr,0)}
+        })                
+                return {...schedule, vigilantes: changedVig}
+            } else {
+                return schedule
+            }
+        })
+        this.setState({schedules: changeTotalHoras}, ()=>this.selectSchedule(this.state.selectedSchedule.id))
+        console.log(this.state.schedules)
+    }    
+    
+    
+    setTotalHorasFeriado = (Temporal) => {
+        const { feriados, dates } = this.state
+        const changeTotalHoras = this.state.schedules.map(schedule => {
+            if (schedule.id === this.state.selectedSchedule.id) {
+                const changedVig = schedule.vigilantes.map(vigilante => {
+                    const hFeriado= [];       
+                    const filteredFeriados = feriados.filter(item => {
+                        return Temporal.PlainDate.compare(Temporal.PlainDate.from(item), Temporal.PlainDate.from(schedule.start)) >= 0
+                        && Temporal.PlainDate.compare(Temporal.PlainDate.from(item), Temporal.PlainDate.from(schedule.end)) <= 0
+                    }).map(feriado => {
+                        const today = Temporal.PlainDate.from(feriado)
+                        const yesterday = today.subtract({days: 1})
+                        
+                                
+                        if(dates[yesterday.year]?.[yesterday.month]?.[yesterday.day]
+                            && Object.entries(dates[yesterday.year]?.[yesterday.month]?.[yesterday.day]).filter(item=> item[0].includes(vigilante.mec))
+                            && Object.entries(dates[yesterday.year]?.[yesterday.month]?.[yesterday.day]).filter(item=> item[0].includes(vigilante.mec))
+                            .some(item => Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`).value)).total('hours') <= 0)) {
+                                console.log('it passes!!!!!!!!!!!!!1')
+                                const filtered = Object.entries(dates[yesterday.year]?.[yesterday.month]?.[yesterday.day]).filter(item=> item[0].includes(vigilante.mec))
+                                filtered.map(item => {
+                                    if (Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`).value)).total('hours') <= 0) {
+                                        return hFeriado.push(Temporal.PlainTime.from("00:00").until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`).value)).round({ smallestUnit: "hours" }).total('hours'))
+                                    } else { 
+                                        return hFeriado.push(0)
+                                    }    
+                                })    
+                            }        
+                            if(dates[today.year]?.[today.month]?.[today.day]
+                                && Object.entries(dates[today.year]?.[today.month]?.[today.day]).filter(item=> item[0].includes(vigilante.mec))
+                                && Object.entries(dates[today.year]?.[today.month]?.[today.day]).filter(item=> item[0].includes(vigilante.mec))
+                                .every(item => Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`).value)).total('hours') > 0)) {
+                                const filtered = Object.entries(dates[today.year]?.[today.month]?.[today.day]).filter(item=> item[0].includes(vigilante.mec))    
+                                    filtered.map(item => hFeriado.push(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`).value)).round({ smallestUnit: "hours" }).total('hours')))
+                
+                            }        
+                            
+                                if (dates[today.year]?.[today.month]?.[today.day]
+                                && Object.entries(dates[today.year]?.[today.month]?.[today.day]).filter(item=> item[0].includes(vigilante.mec))    
+                                && Object.entries(dates[today.year]?.[today.month]?.[today.day]).filter(item=> item[0].includes(vigilante.mec))
+                                .some(item => Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`).value)).total('hours') <= 0)) {
+                                    
+                                    const filtered = Object.entries(dates[today.year]?.[today.month]?.[today.day]).filter(item=> item[0].includes(vigilante.mec))
+                                    filtered.map(item => {
+                                        if (Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`).value)).total('hours') <= 0) {
+                                            return hFeriado.push(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`).value).until(Temporal.PlainTime.from("23:59")).round({ smallestUnit: "hours" }).total('hours'))
+                                        } else { 
+                                            return hFeriado.push(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`).value)).round({ smallestUnit: "hours" }).total('hours'))
+                                        }    
+                                    })        
+                            }
+                        })    
+            return {...vigilante, horasFeriado: hFeriado.reduce((acc, curr)=> acc + curr,0)}
+        })                
+                return {...schedule, vigilantes: changedVig}
+            } else {
+                return schedule
+            }
+        })
+        this.setState(prevState => ({...prevState, schedules: changeTotalHoras}), ()=>this.setTotalHoras())
+        console.log(this.state.schedules)
+    }
+
+
+
+    // setTotalHorasNoturnas = (Temporal) => {
+    //     const changeTotalHoras = this.state.schedules.map(schedule => {
+    //         if (schedule.id === this.state.selectedSchedule.id) {
+    //             const totalDays  = Temporal.PlainDateTime.from(`${schedule.start} 00:00:00`)
+    //             .until(Temporal.PlainDateTime.from(`${schedule.end} 23:59:59`))
+    //             .round({ smallestUnit: "days" }).days
+
+    //             const changedVig = schedule.vigilantes.map(vigilante => {
+    //                 const hNoturnas = [];       
+    //                 for(let i=0; i<totalDays; i++) {
+    //                     const today = Temporal.PlainDate.from(schedule.start).add({ days: i})
+    //                     const yesterday = today.subtract({days: 1})
+    //                     const letraHoje = document.querySelector(`[mec="${vigilante.mec}"][date="${today}"]`)?.value
+    //                     const letraOntem = document.querySelector(`[mec="${vigilante.mec}"][date="${yesterday}"]`)?.value
+
+    //                     if(document.querySelector(`[mec="${vigilante.mec}"][date="${yesterday}"]`) && letraOntem &&
+    //                     Temporal.PlainTime.from(document.querySelector(`#${letraOntem}horasIdStart`).value)
+    //                     .until(Temporal.PlainTime.from(document.querySelector(`#${letraOntem}horasIdEnd`).value))
+    //                     .total('hours') <= 0 
+    //                     && Temporal.PlainTime.compare(Temporal.PlainTime.from(document.querySelector(`#${letraOntem}horasIdEnd`).value), Temporal.PlainTime.from('06:00')) >= 0){
+    //                     hNoturnas.push(Temporal.PlainTime.from('00:00').until(Temporal.PlainTime.from("06:00")).total('hours'))
+    //                     // .until(Temporal.PlainTime.from(document.querySelector(`#${letraOntem}horasIdEnd`).value))
+    //                     // .total('hours')
+    //                 }
+    //                 if(document.querySelector(`[mec="${vigilante.mec}"][date="${yesterday}"]`) && letraOntem &&
+    //                     Temporal.PlainTime.from(document.querySelector(`#${letraOntem}horasIdStart`).value)
+    //                     .until(Temporal.PlainTime.from(document.querySelector(`#${letraOntem}horasIdEnd`).value))
+    //                     .total('hours') <= 0 
+    //                     && Temporal.PlainTime.compare(Temporal.PlainTime.from(document.querySelector(`#${letraOntem}horasIdEnd`).value), Temporal.PlainTime.from('06:00')) < 0){
+    //                     hNoturnas.push(Temporal.PlainTime.from('00:00').until(Temporal.PlainTime.from(document.querySelector(`#${letraOntem}horasIdEnd`).value)).total('hours')) 
+    //                 }
+    //                 console.log("noturnas",hNoturnas)
+
+                        
+    //                     // if(document.querySelector(`[mec="${vigilante.mec}"][date="${today}"]`) && letraHoje &&
+    //                     // Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdStart`).value)
+    //                     // .until(Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdEnd`).value))
+    //                     // .total('hours') <= 0) {
+    //                     //     return Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdStart`).value)
+    //                     // .until(Temporal.PlainTime.from("23:59:59"))
+    //                     // .round({smallestUnit: "minutes"})
+    //                     // .total('hours')
+    //                     // }
+                        
+    //                     // if(document.querySelector(`[mec="${vigilante.mec}"][date="${feriado}"]`) && letraHoje &&
+    //                     // Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdStart`).value)
+    //                     // .until(Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdEnd`).value))
+    //                     // .total('hours') > 0) {
+    //                     //     return Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdStart`).value)
+    //                     // .until(Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdEnd`).value))
+    //                     // .round({smallestUnit: "minutes"})
+    //                     // .total('hours')
+    //                     // }
+    //                     // return 0
+    //                 }
+    //                 return {...vigilante, horasNoturnas: hNoturnas.reduce((acc, curr)=> acc + curr,0)}
+    //             })
+    //             return {...schedule, vigilantes: changedVig}
+    //         } else {
+    //             return schedule
+    //         }
+    //     })
+    //     this.setState({schedules: changeTotalHoras}, ()=>this.selectSchedule(this.state.selectedSchedule.id))
+    //     console.log(this.state.schedules)
+    // }                
+
+
 
 
 
@@ -305,6 +528,74 @@ class Workplace extends Component {
         }
     }
 
+    toggleModal = () => {
+        this.setState(prevState=> ({
+            ...prevState, isModalOpen: !prevState.isModalOpen
+        }))
+    }
+
+    setWorkplaceOptions = () => {
+        this.setState({
+            options: {
+                segunda: {inicio: document.getElementById('segunda-inicio').value, fim: document.getElementById('segunda-fim').value},
+                terça: {inicio: document.getElementById('terça-inicio').value, fim: document.getElementById('terça-fim').value},
+                quarta: {inicio: document.getElementById('quarta-inicio').value, fim: document.getElementById('quarta-fim').value},
+                quinta: {inicio: document.getElementById('quinta-inicio').value, fim: document.getElementById('quinta-fim').value},
+                sexta: {inicio: document.getElementById('sexta-inicio').value, fim: document.getElementById('sexta-fim').value},
+                sabado: {inicio: document.getElementById('sabado-inicio').value, fim: document.getElementById('sabado-fim').value},
+                domingo: {inicio: document.getElementById('domingo-inicio').value, fim: document.getElementById('domingo-fim').value},
+                feriado: {inicio: document.getElementById('feriado-inicio').value, fim: document.getElementById('feriado-fim').value}
+        }})
+    }
+
+
+
+    addDefaultVigilante = (vig) => {
+      if(this.state.vigilantes.filter(v => v.mec === vig.mec).length) {
+        alert('Vigilante Já Inserido')
+      } else {
+          this.setState(prevState => ({
+            ...prevState, vigilantes: [...prevState.vigilantes, vig]
+        }))
+      }        
+    }
+
+    removeDefaultVigilante = (vig) => {
+        
+        const removeDefaultVig = this.state.vigilantes.filter(v => v.mec !== vig.mec)
+        this.setState(prevState => ({
+            ...prevState, vigilantes: removeDefaultVig
+        }))
+    }
+
+    changeDefaultVigRows = (vig, event) => {
+        const changedVig = this.state.vigilantes.map(vigilante => {
+            const changedArray = [];
+            for (let i=0; i<Number(event.target.value); i++) {
+                changedArray.push(i)
+            }
+            if (vigilante.mec === vig.mec) {
+                return {...vigilante, rows: changedArray}
+            } else {
+                return vigilante
+            }
+        })
+        this.setState({vigilantes: changedVig})
+    }
+
+    addFeriado = (date) => {
+        this.state.feriados.filter(feriado => feriado === date).length ?
+        alert('Feriado Já Inserido') :
+        this.setState(prevState => ({
+            ...prevState, feriados: [...prevState.feriados, date]
+        }))
+    }
+    
+    removeFeriado = (date) => {
+        this.setState(prevState => ({
+            ...prevState, feriados: this.state.feriados.filter(feriado => feriado !== date)
+        }))
+    }
     
 
     render() {
@@ -327,9 +618,28 @@ class Workplace extends Component {
                     )).round({ smallestUnit: "days" }).days)} */}
 
                     
-
-            <h1>{this.state.workplace}</h1>
+            <div style={{fontSize: "3em", width: "100%", display: 'flex'}}>
+                {this.state.workplace}
+                <button onClick={()=>this.toggleModal()} style={{marginLeft: "auto", marginRight: "1%", width: "5%", fontSize: '1em', fontWeight: '1000', marginTop: '0.2%', borderRadius: '20px'}}>&#9881;</button>
+            </div>
             <div style={{display: 'flex', justifyContent:'space-evenly'}}>
+            {this.state.isModalOpen && 
+            <Modal>
+                <WorkplaceOptions 
+                    toggleModal={this.toggleModal} 
+                    options={this.state.options} 
+                    workplace={this.state.workplace}
+                    setWorkplaceOptions={this.setWorkplaceOptions}
+                    vigilantes={this.state.vigilantes}
+                    addDefaultVigilante={this.addDefaultVigilante}
+                    removeDefaultVigilante={this.removeDefaultVigilante}
+                    changeDefaultVigRows={this.changeDefaultVigRows}
+                    feriados={this.state.feriados}
+                    addFeriado={this.addFeriado}
+                    removeFeriado={this.removeFeriado}
+                    />
+            </Modal>
+            }
             <ScheduleList 
                 Temporal={this.props.Temporal} 
                 schedules={this.state.schedules} 
@@ -362,7 +672,10 @@ class Workplace extends Component {
                 changeDay2={this.changeDay2}
                 horarios={this.state.horarios}
                 setTotalHoras={this.setTotalHoras}
-                horas={this.state.horas}
+                options={this.state.options}
+                feriados={this.state.feriados}
+                setTotalHorasFeriado={this.setTotalHorasFeriado}
+                setTotalHorasNoturnas={this.setTotalHorasNoturnas}
 
                 />
             </div>
