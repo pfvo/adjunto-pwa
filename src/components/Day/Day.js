@@ -5,17 +5,16 @@ const getDateWorker = (currentDay, rowId, dates) => {
 }
 
 
-const Day = ({currentDay, vigilantes, dates, changeDay, changeDay2, horarios, Temporal, options, feriados}) => {
-    
-    const horasFeriado= [];
+const Day = ({currentDay, vigilantes, dates, changeDay, changeDay2, horarios, Temporal, options, feriados, eventSlower, speed, clearTimeouts}) => {
     const horasDiarias = []
     const weekDaysPT = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'];
     const weekDaysPTFull = ['segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
     const day = currentDay.day < 10 ? '0' + currentDay.day.toString() : currentDay.day;
     const mappedVigilantes = vigilantes.map(vigilante => {
         const mappedRows = vigilante.rows.map(row => {
+            if(speed === 'normal') {
             return <input 
-           
+        //    NORMAL!
             onChange={(event)=> {
                 document.getElementById('insertHoras').style.boxShadow="0px 0px 25px 4px rgb(0, 255, 175)";
                 horarios.filter(horario => horario.id === event.target.value).length ?
@@ -31,8 +30,42 @@ const Day = ({currentDay, vigilantes, dates, changeDay, changeDay2, horarios, Te
             placeholder={`${row+1}-${vigilante.mec}`} 
             defaultValue={getDateWorker(currentDay, `${row+1}-${vigilante.mec}`, dates)}
             date={currentDay.toString()}
-            className='letter-input'>
+            insertion = {'day'}
+            className='letter-input'
+            tabIndex={vigilante.mec}>
             </input>
+
+            } else if (speed === 'fast') {
+                return <input 
+                // Fast
+                onChange={(event)=> eventSlower(event, currentDay)}
+                onKeyDown={(event)=>clearTimeouts(event)}
+                type='text' 
+                id={`${row+1}-${vigilante.mec}`}
+                mec={vigilante.mec}
+                key={`${row+1}-${vigilante.mec}`}
+                placeholder={`${row+1}-${vigilante.mec}`} 
+                defaultValue={getDateWorker(currentDay, `${row+1}-${vigilante.mec}`, dates)}
+                date={currentDay.toString()}
+                insertion = {'day'}
+                className='letter-input'
+                tabIndex={vigilante.mec}>
+                </input>
+            } else {
+                return <input 
+                type='text' 
+                id={`${row+1}-${vigilante.mec}`}
+                mec={vigilante.mec}
+                key={`${row+1}-${vigilante.mec}`}
+                placeholder={`${row+1}-${vigilante.mec}`} 
+                defaultValue={getDateWorker(currentDay, `${row+1}-${vigilante.mec}`, dates)}
+                date={currentDay.toString()}
+                insertion = {'day'}
+                className='letter-input'
+                tabIndex={vigilante.mec}>
+                </input>
+            }
+            
         })
         return mappedRows;
     })

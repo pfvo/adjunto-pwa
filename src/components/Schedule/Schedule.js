@@ -5,13 +5,34 @@ import Day from "../Day/Day"
 
 
 
-const Schedule = ({Temporal, selectedSchedule, vigilantes, dates, changeDay, changeDay2, horarios, setTotalHoras, options, feriados, setTotalHorasFeriado, setTotalHorasNoturnas}) => {
+const Schedule = ({Temporal, selectedSchedule, vigilantes, dates, changeDay, changeDay2, horarios, setTotalHoras, options, feriados, fastScheduleInput, turboScheduleInputClick, speed}) => {
     const fullMonthsPT = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Jullho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-    
     const totalDays  = selectedSchedule.id ? (Temporal.PlainDateTime.from(`${selectedSchedule.start} 00:00:00`)
     .until(Temporal.PlainDateTime.from(`${selectedSchedule.end} 23:59:59`))
     .round({ smallestUnit: "days" }).days) : 0
-
+    
+    let eventArray = []            
+    let typingTimer;
+    const eventSlower = (event, currentDay) => {
+        clearTimeout(typingTimer);
+        eventArray.push([event, currentDay])        
+        document.getElementById('insertHoras').style.boxShadow="2px 2px 15px 1px gray"
+        
+        const addtoState = () => {
+            const newArray = eventArray;
+            newArray.map(item => {
+                return fastScheduleInput(item[0], item[1])
+            })
+            document.getElementById('insertHoras').style.boxShadow="0px 0px 25px 4px rgb(0, 255, 175)"
+        }
+        typingTimer = setTimeout(addtoState, 1000);
+    }
+    const clearTimeouts = (event) => {
+        if (event.key !== 'Tab' && event.key !== 'Backspace') {
+            clearTimeout(typingTimer)
+        }
+        }
+    
     let arr = [];
     let totalHoras;
     
@@ -29,7 +50,9 @@ const Schedule = ({Temporal, selectedSchedule, vigilantes, dates, changeDay, cha
             Temporal={Temporal}
             options={options}
             feriados={feriados}
-
+            eventSlower={eventSlower}
+            speed={speed}
+            clearTimeouts={clearTimeouts}
             />)
     }
     return (
@@ -90,11 +113,7 @@ const Schedule = ({Temporal, selectedSchedule, vigilantes, dates, changeDay, cha
                         {/* <input className='totalHoras' defaultValue={[...document.querySelectorAll(`[mec="${vigilante.mec}"]`)]
                         .reduce((acc, curr) => curr.value.length < 1 ? acc + 0 : acc + Number(document.querySelector(`#${curr.value}horasId`).value),0)}></input>
                              */}
-                        <div horas={vigilante.mec} style={{margin: '0', marginLeft: '5px'}} onClick={(event)=>{
-                        // setTotalHoras()
-                        setTotalHorasFeriado(Temporal)
-                        console.log(event.target.textContent)}
-                        }>{totalHoras}</div>
+                        <div horas={vigilante.mec} style={{margin: '0', marginLeft: '5px'}} onClick={()=> setTotalHoras(Temporal)}>{totalHoras}</div>
                         
 
                         
@@ -109,58 +128,13 @@ const Schedule = ({Temporal, selectedSchedule, vigilantes, dates, changeDay, cha
         </div>
         {arr}
         <button id="insertHoras" onClick={()=>{
+            if (speed === "turbo") {turboScheduleInputClick()}
             document.getElementById('insertHoras').style.boxShadow="2px 2px 15px 1px gray"
             document.querySelectorAll(`[horas]`)[0]?.click()
             
             
             
         }}>Inserir Alteraçoes</button>
-
-        {
-            vigilantes.map(vigilante => {
-            const horasFeriado= [];
-            feriados.map(feriado => {
-
-                const today = Temporal.PlainDate.from(feriado)
-                const yesterday = today.subtract({days: 1})
-                const letraHoje = document.querySelector(`[mec="${vigilante.mec}"][date="${feriado}"]`)?.value
-                const letraOntem = document.querySelector(`[mec="${vigilante.mec}"][date="${yesterday}"]`)?.value
-
-                if(document.querySelector(`[mec="${vigilante.mec}"][date="${yesterday}"]`) && letraOntem &&
-                Temporal.PlainTime.from(document.querySelector(`#${letraOntem}horasIdStart`).value)
-                .until(Temporal.PlainTime.from(document.querySelector(`#${letraOntem}horasIdEnd`).value))
-                .total('hours') <= 0) {
-                    horasFeriado.push([vigilante.mec, feriado, Temporal.PlainTime.from("00:00")
-                .until(Temporal.PlainTime.from(document.querySelector(`#${letraOntem}horasIdEnd`).value))
-                .total('hours')])
-                }
-
-                
-                if(document.querySelector(`[mec="${vigilante.mec}"][date="${today}"]`) && letraHoje &&
-                Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdStart`).value)
-                .until(Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdEnd`).value))
-                .total('hours') <= 0) {
-                    horasFeriado.push([vigilante.mec, feriado, Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdStart`).value)
-                .until(Temporal.PlainTime.from("23:59:59"))
-                .round({smallestUnit: "minutes"})
-                .total('hours')])
-                }
-                
-                if(document.querySelector(`[mec="${vigilante.mec}"][date="${feriado}"]`) && letraHoje &&
-                Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdStart`).value)
-                .until(Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdEnd`).value))
-                .total('hours') > 0) {
-                    horasFeriado.push([vigilante.mec, feriado, Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdStart`).value)
-                .until(Temporal.PlainTime.from(document.querySelector(`#${letraHoje}horasIdEnd`).value))
-                .round({smallestUnit: "minutes"})
-                .total('hours')])
-                }
-            })
-            console.log(horasFeriado.reduce((acc, curr)=> acc + curr[2],0))
-        })
-        
-        }
-           <button onClick={console.log('j')}></button>
         
         </div>
     )
