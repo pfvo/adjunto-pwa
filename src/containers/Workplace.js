@@ -6,11 +6,23 @@ import Horarios from "../components/Horarios/Horarios";
 import Modal from "../components/Modal/Modal";
 import WorkplaceOptions from "../components/WorkplaceOptions/WorkplaceOptions";
 import { Temporal } from "@js-temporal/polyfill";
-
+import { useLocation } from "react-router-dom";
 
 const initialState = {
-    workplace: 'hotel',
+    nome: '',
+    local: {
+        morada: "",
+        postal: "",
+        localidade: "",
+        distrito: "",
+    },
     isModalOpen: false,
+    lastUpdated: {
+    },
+    chefia: ["2601"],
+    contrato: {
+
+    },
     options: {
         segunda: {
             inicio: "00:00",
@@ -45,126 +57,21 @@ const initialState = {
             fim: "23:59"
         }
     },
-    feriados: ["2022-07-05", "2022-08-07", "2022-09-07", "2022-01-07", "2022-10-01", "2022-11-07", "2022-12-07", "2022-02-17", "2022-09-17", "2022-01-17", "2022-10-17", "2022-11-17", "2022-12-27", "2022-07-07", "2022-02-08", "2022-02-09"],
+    feriados: [],
     vigilantes: [
-        {
-            mec: '2600',
-            nome: 'Luis Ramos',
-            rows: [0],
-            horas: 0
-        },
-        {
-            mec: '2601',
-            nome: 'Pedro Oliveira',
-            rows: [0],
-            horas: 0
-        },
-        {
-            mec: '2629',
-            nome: 'Rafael Santos',
-            rows: [0],
-            horas: 0
-        },
-        {
-            mec: '2620',
-            nome: 'João Romão',
-            rows: [0],
-            horas: 0
-        }
     ],
     horarios:[
-        {
-            id: "a",
-            start: "08:00",
-            end: "20:00"
-        },
-        {
-            id: "b",
-            start: "20:00",
-            end: "08:00"
-        },
-        {
-            id: "c",
-            start: "12:00",
-            end: "12:00"
-        },
-        {
-            id: "d",
-            start: "12:00",
-            end: "04:00"
-        }
+ 
     ],
     schedules: [
-        { 
-            id : 1,
-            start: "2022-01-01",
-            end: "2022-01-31",
-            vigilantes: [
-                {
-                    mec: '2600',
-                    nome: 'Luis Humberto Costa Ramos',
-                    rows: [0],
-                },
-                {
-                    mec: '2622200',
-                    nome: 'L2amos',
-                    rows: [0]
-                },
-                {
-                    mec: '2620',
-                    nome: 'João Romão',
-                    rows: [0,1,2]
-                }
-            ]
-        },
-        { 
-            id : 2,
-            start: "2022-02-01",
-            end: "2022-02-28",
-            vigilantes: []
-        },
-        { 
-            id : 3,
-            start: "2022-03-01",
-            end: "2022-03-31",
-            vigilantes: []
-        },
-        { 
-            id : 4,
-            start: "2022-03-01",
-            end: "2022-03-31",
-            vigilantes: []
-        },
-        { 
-            id : 5,
-            start: "2022-07-01",
-            end: "2022-07-31",
-            vigilantes: [
-                {
-                    mec: '2620',
-                    nome: 'João Romão',
-                    rows: [0],
-                    horas: 12
-                }
-            ]
-        }
     ],
     dates: {
         //talvez tentar com full date 2022-07-01: {vig: horario}
-        2022: {
-            7: {
-                1: {
-                    '1-2620': 'a',
-                    '1-2601': 'b',
-                    '1-2629': 'c'
-                }
-            }
-        }
     },
     selectedSchedule: { 
-        id : 5,
+        id : 1,
         start: "2022-07-01",
-        end: "2022-07-31",
+        end: "2022-07-01",
         vigilantes: []
     }
 }
@@ -173,15 +80,21 @@ class Workplace extends Component {
     constructor(props) {
         super(props);
         this.state = initialState;
+    }
     
+    componentDidMount() {
+        fetch(`http://localhost:3003/office/workplaces/${window.location.href.split("/")[window.location.href.split("/").length - 1]}`)
+        .then(response => response.json())
+        .then(data => this.setState(...data, console.log(this.state)))
+        .catch(e=> this.setState({hasError: true}))
     }
 
-
+    
     selectSchedule = (id) => {
         const filteredSchedules = this.state.schedules.filter(schedule => schedule.id === id)
         this.setState({selectedSchedule: filteredSchedules[0]})
     }
-
+    
     checkYearMonth = (date) => {
         const year = this.props.Temporal.PlainDate.from(date).year
         const month = this.props.Temporal.PlainDate.from(date).month
@@ -633,14 +546,13 @@ class Workplace extends Component {
         }else if (event.target.value !== ""){
             event.target.style.backgroundColor= 'red'
         }
-    }
+    }    
     
-    
-
     render() {
         return (
             <div>
-
+            {this.state.hasError ? <h1>Error</h1>
+            : <div>
             <div style={{fontSize: "3em", width: "100%", display: 'flex'}}>
                 {this.state.workplace}
                 <button onClick={()=>this.toggleModal()} style={{marginLeft: "auto", marginRight: "1%", width: "5%", fontSize: '1em', fontWeight: '1000', marginTop: '0.2%', borderRadius: '20px'}}>&#9881;</button>
@@ -651,7 +563,7 @@ class Workplace extends Component {
                 <WorkplaceOptions 
                     toggleModal={this.toggleModal} 
                     options={this.state.options} 
-                    workplace={this.state.workplace}
+                    workplace={this.state}
                     setWorkplaceOptions={this.setWorkplaceOptions}
                     vigilantes={this.state.vigilantes}
                     addDefaultVigilante={this.addDefaultVigilante}
@@ -702,8 +614,8 @@ class Workplace extends Component {
                 fastScheduleInput={this.fastScheduleInput}
                 turboScheduleInputClick={this.turboScheduleInputClick}
                 speed={this.props.speed}
-
                 />
+            </div>}
             </div>
     );
     

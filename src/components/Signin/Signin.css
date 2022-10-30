@@ -1,0 +1,75 @@
+.baseForm {
+    width: 100vw;
+    height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;  
+}
+.subForm {
+    box-shadow: 5px 5px 15px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 400px;
+    height: 450px;
+    border-radius: 10px;
+}
+
+.signInTitle {
+    font-size: 3em;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+.labelS {
+    font-size: 1.3em;
+    font-weight: 600;
+    padding: 0;
+    margin-bottom: 4px;
+    
+}
+
+.inputForm{
+    margin-bottom: 15px;
+    padding: 0;
+    width: 80%;
+    height: 40px;
+    border: 1px solid white;
+    border-radius: 30px;
+    transition: 0.2s;
+    font-size: 1em;
+    font-weight: bold;
+    padding-left: 1.5em;
+}
+
+.inputForm:focus{
+    color: white;
+    background-color: rgb(0, 0, 0);
+}
+
+.SignInSubmit {
+    background-color: rgba(255, 255, 255, 0.418);
+    margin-top: 20px;
+    height: 40px;
+    width: 200px;
+    font-size: 1em;
+    border-radius: 40px;
+    text-align: center;
+    font-weight: 700;
+    border: 3px solid black;
+    transition: 0.2s;
+    cursor: pointer;
+}
+.SignInSubmit:hover{
+    background-color: white;
+    transform: scale(1.1)
+}
+
+.registerLink {
+    font-size: 1.4em;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.registerLink:hover {
+    text-decoration: underline;
+}

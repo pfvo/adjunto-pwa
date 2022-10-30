@@ -4,7 +4,7 @@ const WorkplaceOptions = ({toggleModal, options, workplace, setWorkplaceOptions,
         <div className="workplace-modal">
         <div className="modal-box">   
                 
-                <input id='workplace-name' type="text" defaultValue={workplace}/>
+                <input id='workplace-name' type="text" defaultValue={workplace.nome}/>
             <div className="main-box-modal">
             <div className="week-form">
                 <div className="week-day" onChange={(event)=> {
