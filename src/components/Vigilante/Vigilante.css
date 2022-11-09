@@ -1,0 +1,61 @@
+.vig-container {
+    box-shadow: 5px 5px 15px grey;
+    padding: 0px 0 10px 0;
+    border-radius:10px;
+    margin: 15px 0 15px 0;
+
+}
+.vig-container > h3 {
+    width: 100%;
+    margin-bottom: 0;
+}
+.vig-container > label {
+    margin-left:10px;
+    margin-right: 5px;
+    font-weight: 600;
+    font-size: medium;
+}
+
+.vig-container > input, .vig-container > select{
+    text-align: center;
+    border: none;
+    background-color: transparent;
+    font-size: medium;
+}
+
+.vig-container > input:focus, .vig-container > select:focus{
+    outline: none;
+    background-color: black;
+    color: white;
+    text-decoration: none;
+}
+.vig-container > .insert-ausencia {
+    font-size: medium;
+    background-color: transparent;
+    padding: 5px 20px;
+    border-radius: 20px;
+}
+
+.lock-symbol {
+    background-color: transparent;
+    border: none;
+    font-size:25px;
+    margin-left: auto;
+    z-index:1
+    
+    
+}
+
+.vig-container > .inputsEnabled {
+    text-decoration: underline 3px;
+    text-underline-offset: 3px;   
+}
+
+.vig-container > input::-webkit-datetime-edit { 
+    font-size: large;
+}
+
+input.inputsEnabled::-webkit-datetime-edit-fields-wrapper {
+    text-decoration: underline 2px;
+    text-underline-offset: 3px;
+}

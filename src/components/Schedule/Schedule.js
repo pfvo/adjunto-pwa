@@ -68,11 +68,11 @@ const Schedule = ({Temporal, selectedSchedule, vigilantes, dates, changeDay, cha
             if(dates[currentDay3.year]?.[currentDay3.month]?.[currentDay3.day]
                 && Object.entries(dates[currentDay3.year]?.[currentDay3.month]?.[currentDay3.day]).filter(item=> item[0].includes(vigilante.mec))
                 && Object.entries(dates[currentDay3.year]?.[currentDay3.month]?.[currentDay3.day]).filter(item=> item[0].includes(vigilante.mec))
-                .some(item => Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`).value)).total('hours') <= 0)) {
+                .some(item => Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`)?.value || '00:00:00').until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`)?.value || '00:00:00')).total('hours') <= 0)) {
                     const filtered = Object.entries(dates[currentDay3.year]?.[currentDay3.month]?.[currentDay3.day]).filter(item=> item[0].includes(vigilante.mec))
                     filtered.map(item => {
-                        if (Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`).value)).total('hours') <= 0) {
-                            return arr2.push(Temporal.PlainTime.from("00:00").until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`).value)).round({ smallestUnit: "hours" }).total('hours'))
+                        if (Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`)?.value || '00:00:00').until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`)?.value || '00:00:00')).total('hours') <= 0) {
+                            return arr2.push(Temporal.PlainTime.from("00:00").until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`)?.value || '00:00:00')).round({ smallestUnit: "hours" }).total('hours'))
                         } else { 
                             return 0
                         }
@@ -81,20 +81,20 @@ const Schedule = ({Temporal, selectedSchedule, vigilantes, dates, changeDay, cha
             if (dates[currentDay2.year]?.[currentDay2.month]?.[currentDay2.day]
                 && Object.entries(dates[currentDay2.year]?.[currentDay2.month]?.[currentDay2.day]).filter(item=> item[0].includes(vigilante.mec))
                 && Object.entries(dates[currentDay2.year]?.[currentDay2.month]?.[currentDay2.day]).filter(item=> item[0].includes(vigilante.mec))
-                .some(item => Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`).value)).total('hours') <= 0)) {
+                .some(item => Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`)?.value || '00:00:00').until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`)?.value || '00:00:00')).total('hours') <= 0)) {
                     const filtered = Object.entries(dates[currentDay2.year]?.[currentDay2.month]?.[currentDay2.day]).filter(item=> item[0].includes(vigilante.mec))
                     filtered.map(item => {
-                        if (Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`).value)).total('hours') <= 0) {
-                            return arr2.push(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`).value).until(Temporal.PlainTime.from("23:59")).round({ smallestUnit: "hours" }).total('hours'))
+                        if (Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`)?.value || '00:00:00').until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`)?.value || '00:00:00')).total('hours') <= 0) {
+                            return arr2.push(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`)?.value || '00:00:00').until(Temporal.PlainTime.from("23:59")).round({ smallestUnit: "hours" }).total('hours'))
                         } else { 
-                            return arr2.push(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`).value)).round({ smallestUnit: "hours" }).total('hours'))
+                            return arr2.push(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`)?.value || '00:00:00').until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`)?.value || '00:00:00')).round({ smallestUnit: "hours" }).total('hours'))
                         }
                     })
             }
             if(dates[currentDay2.year]?.[currentDay2.month]?.[currentDay2.day]
                 && Object.entries(dates[currentDay2.year]?.[currentDay2.month]?.[currentDay2.day]).filter(item=> item[0].includes(vigilante.mec))
                 && Object.entries(dates[currentDay2.year]?.[currentDay2.month]?.[currentDay2.day]).filter(item=> item[0].includes(vigilante.mec))
-                .every(item => Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`).value)).total('hours') > 0)) {
+                .every(item => Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`)?.value || '00:00:00').until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`)?.value || '00:00:00')).total('hours') > 0)) {
                 const filtered = Object.entries(dates[currentDay2.year]?.[currentDay2.month]?.[currentDay2.day]).filter(item=> item[0].includes(vigilante.mec))
                     filtered.map(item => arr2.push(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdStart`).value).until(Temporal.PlainTime.from(document.querySelector(`#${item[1]}horasIdEnd`).value)).round({ smallestUnit: "hours" }).total('hours')))
 

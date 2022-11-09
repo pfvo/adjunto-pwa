@@ -1,6 +1,6 @@
 import './InsertWorkplaceModal.css'
 
-const user = {id: '2601'}
+const user = {_id: '2601'}
 
 const InsertWorkplaceModal = ({isModalOpen, setIsModalOpen, workplaceList, setWorkplaceList}) => {
     return <div className="insertworkplace-modal">
@@ -56,7 +56,13 @@ const InsertWorkplaceModal = ({isModalOpen, setIsModalOpen, workplaceList, setWo
                                     localidade,
                                     distrito,
                                 },
-                                chefia: ['2601'],
+                                chefia: [user._id],
+                                schedules:{
+                                        id: 1,
+                                        start: new Date().toISOString().slice(0, 10), 
+                                        end: new Date().toISOString().slice(0, 10), 
+                                        vigilantes:[]
+                                },
                                 contrato: {
                                     tipo,
                                     inicio,

@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Signin from './components/Signin/Signin';
 import Office from './containers/Office/Office';
 import WorkplaceList from './components/WorkplaceList/WorkplaceList';
 import Workplace from './containers//Workplace';
 import OfficeNav from './components/OfficeNav/OfficeNav'
 import VigilanteList from './components/VigilanteList/VigilanteList';
+import Vigilante from './components/Vigilante/Vigilante';
 import { Temporal } from '@js-temporal/polyfill';
 import { Link, Route, Routes } from 'react-router-dom';
 
@@ -13,6 +14,30 @@ import './App.css';
 
 
 function App() {
+  const [vigList, setVigList] = useState([]);
+  useEffect(()=> {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    fetch('http://localhost:3003/office/vigilantes', {
+    method: 'get',
+    headers: {'Content-Type': 'application/json'},
+    signal
+    })
+    .then(resp=> resp.json())
+    .then(list => setVigList(list))
+    // .then(()=>setNeedsUpdate(false))
+    .catch(e => {
+        if(e.name === 'AbortError') {
+            return
+        } else {
+            // setHasError(true) 
+        }
+    })   
+    return () => {
+    controller.abort();
+    }
+}, [])
+
   return (
   <div className='App'>
 
@@ -36,8 +61,8 @@ function App() {
       <Route index element={<Office/>} /> 
       <Route path='workplaces' element={<div style={{display: "flex", width: '100%',justifyContent: 'center', alignItems: 'center'}}><WorkplaceList/></div>}/>
       <Route path='vigilantes' element={<VigilanteList/>}/>
-      <Route path='workplaces/:id' element={<Workplace Temporal={Temporal} speed={'fast'}/>}/>
-      <Route path='vigilantes/:id' element={<h1>VIGILANTE</h1>}/>
+      <Route path='workplaces/:id' element={<Workplace Temporal={Temporal} speed={'fast'} vigList={vigList}/>}/>
+      <Route path='vigilantes/:id' element={<Vigilante Temporal={Temporal}/>}/>
     </Route>
   </Routes>
   

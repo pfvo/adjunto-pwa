@@ -9,6 +9,7 @@ import { Temporal } from "@js-temporal/polyfill";
 import { useLocation } from "react-router-dom";
 
 const initialState = {
+    _id:'',
     nome: '',
     local: {
         morada: "",
@@ -82,11 +83,14 @@ class Workplace extends Component {
         this.state = initialState;
     }
     
+    
     componentDidMount() {
         fetch(`http://localhost:3003/office/workplaces/${window.location.href.split("/")[window.location.href.split("/").length - 1]}`)
         .then(response => response.json())
-        .then(data => this.setState(...data, console.log(this.state)))
-        .catch(e=> this.setState({hasError: true}))
+        .then(data => this.setState(...data,  ()=> this.state.schedules?.forEach(item => this.checkYearMonth(item.start))))
+        .catch(e=> this.setState({hasError: true})
+        )
+        console.log(this.props)
     }
 
     
@@ -198,6 +202,17 @@ class Workplace extends Component {
         })
         this.setState({horarios: changeHorarios})
     }
+
+    updateWorkplace = () => {
+        fetch(`http://localhost:3003/office/workplaces/${this.state._id}`, {
+            method: 'put',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                workplace: this.state
+            })
+        })
+        .then(()=>this.selectSchedule(this.state.selectedSchedule.id))
+    }
     
     setTotalHorasFeriado = (Temporal) => {
         const { feriados, dates } = this.state
@@ -257,8 +272,7 @@ class Workplace extends Component {
                     return schedule
             }
         })
-        this.setState(prevState => ({...prevState, schedules: changeTotalHoras}), ()=>this.selectSchedule(this.state.selectedSchedule.id))
-        console.log(this.state.schedules)
+        this.setState(prevState => ({...prevState, schedules: changeTotalHoras}), ()=>this.updateWorkplace())
     } 
     
     setTotalHorasNoturnas = (Temporal) => {
@@ -510,6 +524,7 @@ class Workplace extends Component {
 
     fastScheduleInput = (event, currentDay) => {
         const {dates} = this.state;
+        console.log(this.state.dates)
         const listedVig = dates[currentDay.year][currentDay.month][currentDay.day]
 
         if(event.target.value === "" && dates[currentDay.year][currentDay.month][currentDay.day]?.[event.target.id]) {
@@ -584,7 +599,8 @@ class Workplace extends Component {
                 removeSchedule={this.removeSchedule}
                 vigilantes={this.state.vigilantes}
             />
-            <VigList 
+            <VigList
+                vigList={this.props.vigList}
                 vigilantes={this.state.selectedSchedule.vigilantes}
                 addVigilanteSchedule={this.addVigilanteSchedule}
                 removeVigilanteSchedule={this.removeVigilanteSchedule}

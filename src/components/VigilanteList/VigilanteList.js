@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import InsertVigModal from "../InsertVigModal/InsertVigModal";
 import Modal from "../Modal/Modal";
+import { Link } from "react-router-dom";
 
 const VigilanteList = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -18,7 +19,7 @@ const VigilanteList = () => {
         })
         .then(resp=> resp.json())
         .then(list => setVigList(list))
-        .then(()=> setNeedsUpdate(false))
+        .then(()=>setNeedsUpdate(false))
         .catch(e => {
             if(e.name === 'AbortError') {
                 return
@@ -35,7 +36,7 @@ const VigilanteList = () => {
        return (
         <>
         { hasError ? <h1>ERROR, NEED TO MAKE ERROR COMPONENT</h1> :
-        <div>
+        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap'}}>
             {isModalOpen &&
             <Modal>
                 <InsertVigModal setIsModalOpen={setIsModalOpen} vigList={vigList} setVigList={setVigList}/>
@@ -46,17 +47,18 @@ const VigilanteList = () => {
             <div style={{fontSize: "6em", marginTop:'-20px', padding: 'none'}}>+</div>
             </div>
             </div>
-        {vigList.map(vigilante => <div key={vigilante._id}>
+            <div style={{width: '80%', boxShadow: "5px 5px 15px grey", borderRadius: '20px', padding: '15px 60px', height: '350px', overflowY: 'scroll'}}>
+        {vigList.map(vigilante => <div key={vigilante._id} style={{height: '30px'}}>
         <input type='text' defaultValue={vigilante.mec} disabled></input>
         <input type='text' defaultValue={vigilante.nome} disabled></input>
         <input type='text' defaultValue={vigilante.email} disabled></input>
         <input type='text' defaultValue={vigilante.telemovel} disabled></input>
         <input type='text' defaultValue={vigilante.chefia?.nome} disabled></input>
+        <Link to={`/office/vigilantes/${vigilante._id}`} state={vigList}><button style={{border: 'none', backgroundColor: 'none', borderRadius:'900px', height: '25px', width:'25px'}}>
+            &#9998;</button></Link>
         <button 
             style={{border: 'none', backgroundColor: 'rgb(255, 114, 118)', borderRadius:'900px', height: '25px', width:'25px'}}
-            
             onClick={(e)=> {
-            console.log(vigList.filter(vig => vig._id !== vigilante._id))
             e.preventDefault()
             fetch('http://localhost:3003/office/vigilantes/delete', {
                             method: 'delete',
@@ -65,7 +67,7 @@ const VigilanteList = () => {
                                 id: vigilante._id
                         })
             })     
-            .then(data => setVigList(vigList.filter(vig => vig._id !== vigilante._id)))
+            .then(data => setVigList(prevState => prevState.filter(vig => vig._id !== vigilante._id)))
             //  .then(fetch('http://localhost:3003/office/vigilantes', {
             //                  method: 'post',
             //                  headers: {'Content-Type': 'application/json'},
@@ -83,6 +85,7 @@ const VigilanteList = () => {
             >&#10006;</button>
         </div>)
         }
+        </div>
         </div>
         }
         </>

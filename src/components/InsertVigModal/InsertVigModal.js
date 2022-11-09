@@ -1,6 +1,8 @@
 import './InsertVigModal.css'
 
 const InsertVigModal = ({ setIsModalOpen, vigList, setVigList }) => {
+
+    console.log(vigList)
     return <div className='insertvig-modal'>
         <div style={{ backgroundColor:'rgb(43, 237, 205)', width: '450px', display:'flex', flexWrap:'wrap', justifyContent: 'center', fontWeight: '500', fontSize: '1.1em' }}>
             <p style={{fontSize: "1.3em"}}>Inserir Vigilante</p>
@@ -45,24 +47,23 @@ const InsertVigModal = ({ setIsModalOpen, vigList, setVigList }) => {
             <input type='date' style={{width: '99px'}} id='insertVigilante-inicio'></input>
             <input type='date' style={{width: '99px'}} id='insertVigilante-fim'></input>
             </div>
-             {/* <div style={{width: '80%', display:'flex'}}>
+             <div style={{width: '80%', display:'flex'}}>
             <label style={{marginRight:'auto'}}>Role:</label>
             <select id='insertVigilante-role' style={{width: '208px'}}>
                 <option value='vigilante'>Vigilante</option>
-                <option value='chefe'>Responsável de Posto</option>
+                <option value='chefe'>Chefe de Posto</option>
                 <option value='supervisor'>Supervisor</option>
             </select>
-            </div> */}
-            {/* <div style={{width: '80%', display:'flex'}}>
-            <label style={{marginRight:'auto'}}>Chefia:</label>
-            <select id='insertVigilante-chefia' style={{width: '208px'}}>
-                <option value='N/A'>N/A</option>
+            </div>
+            <div style={{width: '80%', display:'flex'}}>
+            <label style={{marginRight:'auto'}}>Chefia:(default user.id, acrescentar no servidor e front end)</label>
+            {/* <select id='insertVigilante-chefia' style={{width: '208px'}}>
                 {
                     vigList.filter(vig => vig?.roles.includes('chefe'))
-                    .map(item => <option key={item._id} id={item._id} ivalue={item._id}>{item.nome}</option>)
+                    .map(item => <option key={item._id} id={item._id} value={item._id}>{item.nome}</option>)
                 }
-            </select>
-            </div> */}
+            </select> */}
+            </div>
             <div style={{width: '80%', height:'80px', margin:'10px, 0 10px, 0', display:'flex', justifyContent: 'space-around', alignItems:'center'}}>
             <button style={{width: '100px', height: '40px'}} 
             onClick={()=> {
@@ -77,8 +78,13 @@ const InsertVigModal = ({ setIsModalOpen, vigList, setVigList }) => {
                     const tipo = document.getElementById('insertVigilante-tipo').value
                     const inicio = document.getElementById('insertVigilante-inicio').value
                     const fim = document.getElementById('insertVigilante-fim').value
-                    // const roles = document.getElementById('insertVigilante-role').value
+                    const roles =  document.getElementById('insertVigilante-role').value === "vigilante" 
+                    ? ['vigilante'] 
+                    : document.getElementById('insertVigilante-role').value === "chefe"  
+                    ? ['vigilante', 'chefe'] 
+                    : ['vigilante', 'chefe', 'supervisor'];
                     // const chefia = document.getElementById('insertVigilante-chefia').value
+
                     nome && mec && telemovel&& email ? (
                         fetch('http://localhost:3003/office/vigilantes/insert', {
                             method: 'post',
@@ -91,11 +97,13 @@ const InsertVigModal = ({ setIsModalOpen, vigList, setVigList }) => {
                                 aniversario,
                                 morada : {rua, postal, cidade},
                                 contrato : {tipo, inicio, fim},
+                                roles,
+                                
                                 })
                         })
                         .then(response => response.json())
                         .then(data => setVigList([...vigList, data]))
-                        .catch(console.log)
+                        .catch(e => console.log('AAAAAAAAAAAAAAAAAA'))
                     ) : alert("something went wrong")
 
                     setIsModalOpen(false)

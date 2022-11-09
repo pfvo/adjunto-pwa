@@ -4,8 +4,8 @@ const user = {
     id: '2601'
 }
 
-const WorkplaceCard = ({workplace, workplaceList ,setWorkplaceList, setNeedsUpdate}) => {
-    return <Link to={`/office/workplaces/${workplace._id}`} style={{textDecoration: 'none'}} state={workplace}><div style={{width: '300px', backgroundColor: "lightgray", borderRadius: '25px', margin:'20px'}}>
+const WorkplaceCard = ({workplace, workplaceList ,setWorkplaceList, setNeedsUpdate, vigList}) => {
+    return <Link to={`/office/workplaces/${workplace._id}`} style={{textDecoration: 'none'}} state={vigList}><div style={{width: '300px', backgroundColor: "lightgray", borderRadius: '25px', margin:'20px'}}>
         <div style={{display: 'flex', justifyContent:'center', alignItems:'center', width:'80%',height:'35px', margin:'auto'}}>
         <p style={{fontSize: '20px', fontWeight: '700', margin: "0"}}>{workplace.nome}</p>
         <button 

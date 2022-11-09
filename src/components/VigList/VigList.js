@@ -1,13 +1,24 @@
 import './VigList.css'
 
-const VigList = ({vigilantes, addVigilanteSchedule, removeVigilanteSchedule, changeVigRows}) => {
+const VigList = ({vigilantes, addVigilanteSchedule, removeVigilanteSchedule, changeVigRows, vigList}) => {
     return (
         <div className="vigList">
             <p>VigList</p>
             <div>
-            <input type='text' id='insertVigilanteMec' placeholder='mec'></input>
-            <input type='text' id='insertVigilanteName' placeholder='nome'></input>
+            {/* <input type='text' id='insertVigilanteMec' placeholder='mec'></input> */}
+            <input type="text" list="vigmec" id='insertVigilanteMec' placeholder="mec" onChange={(event)=> {
+                vigList.map(vig=> {
+                    if (vig.mec === event.target.value) {
+                        document.querySelector('#insertVigilanteName').value = vig.nome
+                }})}}/>
+            <input type='text' id='insertVigilanteName' list="programmingLanguages" placeholder='nome'></input>
             <input type='text' id='insertVigilanteRows' defaultValue='1' ></input>
+            <datalist id="vigmec">
+                {vigList?.map(vig => <option key={vig._id} value={vig.mec}>{vig.nome}</option>)}
+                <option value="Objective C">Objective C</option>
+            </datalist>
+            
+            
                 <button
                 className='add-vig-insert'
                 onClick={() => {
@@ -27,7 +38,7 @@ const VigList = ({vigilantes, addVigilanteSchedule, removeVigilanteSchedule, cha
                     })
                     document.querySelector('#insertVigilanteMec').value = '';
                     document.querySelector('#insertVigilanteName').value = '';
-                    document.querySelector('#insertVigilanteRows').value = '';
+                    document.querySelector('#insertVigilanteRows').value = '1';
                     }
                 }>
                 +
@@ -35,7 +46,7 @@ const VigList = ({vigilantes, addVigilanteSchedule, removeVigilanteSchedule, cha
          
             </div>
             <div className='vigList-sub'>
-                {vigilantes.map(vigilante => { 
+                {vigilantes?.map(vigilante => { 
                     return(
                         <div className='single-vig' key={vigilante.mec + vigilante.rows.length}>
                             <input type='text' className='changeMec' defaultValue={vigilante.mec}></input>
